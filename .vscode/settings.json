@@ -1,3 +1,6 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/NRZ"
+    "cmake.sourceDirectory": "${workspaceFolder}/NRZ",
+    "files.associations": {
+        "freertos.h": "c"
+    }
 }
