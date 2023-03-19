@@ -1,6 +1,8 @@
 {
     "cmake.sourceDirectory": "${workspaceFolder}/NRZ",
     "files.associations": {
-        "freertos.h": "c"
+        "freertos.h": "c",
+        "freertosconfig.h": "c",
+        "freertosconfig_arch.h": "c"
     }
 }

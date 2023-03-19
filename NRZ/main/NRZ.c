@@ -26,25 +26,89 @@
 
 #include "nvs_flash.h"
 
-#define CLK 14
-#define TX 13
+#define CLK GPIO_NUM_4
+#define TX GPIO_NUM_2
+
+#define BAUD_RATE 5
+#define CLOCK_PERIOD_MS 200 //  (1 / BAUD_RATE) * 1000
 
 static const char *TAG = "NRZ";
 
 bool clockState = 0;
 
-void clock_generate(void *arg)
+void clock_generate()
 {
-    vTaskDelay(200 / portTICK_PERIOD_MS);
+    vTaskDelay(CLOCK_PERIOD_MS / portTICK_PERIOD_MS);
     clockState = !clockState;
     gpio_set_level(CLK, clockState);
-    ESP_LOGI(TAG, "clock state: %d", clockState);
-    vTaskDelete(NULL);
+
+    vTaskDelay(CLOCK_PERIOD_MS / portTICK_PERIOD_MS);
+    clockState = !clockState;
+    gpio_set_level(CLK, clockState);
+}
+
+void send_byte_asynchronous(uint8_t data)
+{
+    // ASCII values verification
+    if ((data < 0) && (data > 255))
+    {
+        ESP_LOGE(TAG, "Data out of range %d", data);
+        return;
+    }
+
+    // Copy the data
+    uint8_t dataToSend = data;
+    uint8_t bitToSend = 0;
+
+    // Start bit
+    gpio_set_level(TX, 1);
+    vTaskDelay(CLOCK_PERIOD_MS / portTICK_PERIOD_MS);
+
+    // Send byte
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        bitToSend = dataToSend & 0x01;
+        ESP_LOGI(TAG, "send bit: %d", bitToSend);
+        gpio_set_level(TX, bitToSend);
+        vTaskDelay(CLOCK_PERIOD_MS / portTICK_PERIOD_MS);
+        dataToSend = dataToSend >> 1;
+    }
+
+    gpio_set_level(TX, 0);
+    vTaskDelay(CLOCK_PERIOD_MS / portTICK_PERIOD_MS);
+
+    return;
+}
+
+void send_byte_synchronous(uint8_t data)
+{
+    // ASCII values verification
+    if ((data < 0) && (data > 255))
+    {
+        ESP_LOGE(TAG, "Data out of range %d", data);
+        return;
+    }
+
+    // Copy the data
+    uint8_t dataToSend = data;
+    uint8_t bitToSend = 0;
+
+    // Send byte
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        bitToSend = dataToSend & 0x01;
+        ESP_LOGI(TAG, "send bit: %d", bitToSend);
+        gpio_set_level(TX, bitToSend);
+        clock_generate();
+        dataToSend = dataToSend >> 1;
+    }
+    return;
 }
 
 void peripherical_init()
 {
     gpio_set_direction(CLK, GPIO_MODE_OUTPUT);
+    gpio_set_direction(TX, GPIO_MODE_OUTPUT);
 }
 
 void app_main()
@@ -60,10 +124,28 @@ void app_main()
     ESP_ERROR_CHECK(ret);
     peripherical_init();
 
+    ESP_LOGI(TAG, "sending data...");
+    ESP_LOGI(TAG, "next byte:");
+    send_byte_synchronous('O');
+    ESP_LOGI(TAG, "next byte:");
+    send_byte_synchronous('l');
+    ESP_LOGI(TAG, "next byte:");
+    send_byte_synchronous('á');
+    ESP_LOGI(TAG, "next byte:");
+    send_byte_synchronous(' ');
+    ESP_LOGI(TAG, "next byte:");
+    send_byte_synchronous('m');
+    ESP_LOGI(TAG, "next byte:");
+    send_byte_synchronous('u');
+    ESP_LOGI(TAG, "next byte:");
+    send_byte_synchronous('n');
+    ESP_LOGI(TAG, "next byte:");
+    send_byte_synchronous('d');
+    ESP_LOGI(TAG, "next byte:");
+    send_byte_synchronous('o');
+
     while (1)
     {
-        xTaskCreate(&clock_generate, "clock_generate", 1024, NULL, 5, NULL);
-
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
