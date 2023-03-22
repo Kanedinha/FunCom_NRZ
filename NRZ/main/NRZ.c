@@ -6,16 +6,17 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
-#include <rom/ets_sys.h>
-#include <esp_types.h>
-#include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include "freertos/timers.h"
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
+
+#include <rom/ets_sys.h>
 #include "driver/gpio.h"
+#include <esp_types.h>
+#include "esp_timer.h"
 #include "esp_system.h"
 #include "esp_log.h"
 #include <esp_task_wdt.h>
@@ -109,6 +110,8 @@ void peripherical_init()
 {
     gpio_set_direction(CLK, GPIO_MODE_OUTPUT);
     gpio_set_direction(TX, GPIO_MODE_OUTPUT);
+
+    hd44780 hd44780_t;
 }
 
 void app_main()
