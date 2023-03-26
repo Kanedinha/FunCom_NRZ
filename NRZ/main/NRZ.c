@@ -27,6 +27,8 @@
 
 #include "nvs_flash.h"
 
+#include "hd44780.h"
+
 #define CLK GPIO_NUM_4
 #define TX GPIO_NUM_2
 
@@ -111,7 +113,7 @@ void peripherical_init()
     gpio_set_direction(CLK, GPIO_MODE_OUTPUT);
     gpio_set_direction(TX, GPIO_MODE_OUTPUT);
 
-    hd44780 hd44780_t;
+    hd44780_t lcd;
 }
 
 void app_main()
@@ -128,24 +130,42 @@ void app_main()
     peripherical_init();
 
     ESP_LOGI(TAG, "sending data...");
+
+    // send_byte_synchronous('O');
+    // ESP_LOGI(TAG, "next byte:");
+    // send_byte_synchronous('l');
+    // ESP_LOGI(TAG, "next byte:");
+    // send_byte_synchronous('á');
+    // ESP_LOGI(TAG, "next byte:");
+    // send_byte_synchronous(' ');
+    // ESP_LOGI(TAG, "next byte:");
+    // send_byte_synchronous('m');
+    // ESP_LOGI(TAG, "next byte:");
+    // send_byte_synchronous('u');
+    // ESP_LOGI(TAG, "next byte:");
+    // send_byte_synchronous('n');
+    // ESP_LOGI(TAG, "next byte:");
+    // send_byte_synchronous('d');
+    // ESP_LOGI(TAG, "next byte:");
+    // send_byte_synchronous('o');
+
+    send_byte_asynchronous('O');
     ESP_LOGI(TAG, "next byte:");
-    send_byte_synchronous('O');
+    send_byte_asynchronous('l');
     ESP_LOGI(TAG, "next byte:");
-    send_byte_synchronous('l');
+    send_byte_asynchronous('á');
     ESP_LOGI(TAG, "next byte:");
-    send_byte_synchronous('á');
+    send_byte_asynchronous(' ');
     ESP_LOGI(TAG, "next byte:");
-    send_byte_synchronous(' ');
+    send_byte_asynchronous('m');
     ESP_LOGI(TAG, "next byte:");
-    send_byte_synchronous('m');
+    send_byte_asynchronous('u');
     ESP_LOGI(TAG, "next byte:");
-    send_byte_synchronous('u');
+    send_byte_asynchronous('n');
     ESP_LOGI(TAG, "next byte:");
-    send_byte_synchronous('n');
+    send_byte_asynchronous('d');
     ESP_LOGI(TAG, "next byte:");
-    send_byte_synchronous('d');
-    ESP_LOGI(TAG, "next byte:");
-    send_byte_synchronous('o');
+    send_byte_asynchronous('o');
 
     while (1)
     {
